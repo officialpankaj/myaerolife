@@ -1,1 +1,93 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #254d81 !important;
+  --color-primaryv2: #00629d;
+  --color-primaryv4: #c9d4fa;
+  --color-primaryv5: #005dc8;
+  --color-primaryv6: #0d6efd;
+  --color-primaryv7: #4164df;
+  --color-primaryv8: #dfe5fc;
+  --color-secondary: #f7fafc;
+  --color-secondaryv2: #3c4257;
+  --color-secondaryv3: #212b35;
+  --color-secondaryv4: #e6e6e6;
+  --color-secondaryv5: #f6f7f9;
+  --color-secondaryv6: #404952;
+  --color-secondaryv7: #ebf2f8;
+  --color-secondaryv8: #171b24;
+  --color-secondaryv9: #97a1ab;
+  --color-secondaryv10: #898c90;
+  --color-secondaryv11: #dcdcdc;
+  --color-secondaryv12: #f0f0f0;
+  --color-greyish: #88959f;
+  --color-success: #56d52d;
+  --color-successv2: #01ab3f;
+  --color-successv2-200: #cceed9;
+  --color-successv2-300: #8bd6a7;
+  --color-error: #ff625d;
+  --color-errorv2: #ab0101;
+  --color-warning: #ff625d;
+
+  --text-2xs: 0.6rem;
+  --text-xsss: 0.65rem;
+  --text-xss: 0.7rem;
+  --text-xxs: 0.8rem;
+  --text-ssm: 0.86rem;
+  --text-sssm: 0.9em;
+  --text-ssssm: 0.95em;
+  --text-md: 1.1em;
+
+  --font-montserrat: "Montserrat", sans-serif;
+}
+
+* {
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  color: var(--color-secondaryV3);
+  font-family: "Montserrat", sans-serif !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.rotate {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
