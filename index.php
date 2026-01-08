@@ -34,6 +34,30 @@ if (isset($uri[1])) {
           $userData = $jwtAuthentication->validate();
           $admincontroller->verify_token_callback($userData);
           break;
+        case 'employees':
+          $userData = $jwtAuthentication->validate();
+          $admincontroller->employees_callback($userData);
+          break;
+        case 'doctors':
+          $userData = $jwtAuthentication->validate();
+          $admincontroller->doctors_callback($userData);
+          break;
+        case 'chemists':
+          $userData = $jwtAuthentication->validate();
+          $admincontroller->chemists_callback($userData);
+          break;
+        case 'register-scan':
+          $userData = $jwtAuthentication->validate();
+          $admincontroller->register_scan_callback($userData);
+          break;
+        case 'all-scans':
+          $userData = $jwtAuthentication->validate();
+          $admincontroller->all_scans_callback($userData);
+          break;
+        case 'all-scans-by-state':
+          $userData = $jwtAuthentication->validate();
+          $admincontroller->all_scans_by_state_callback($userData);
+          break;
         default:
           header("HTTP/1.1 404 Not Found");
           $response = array();

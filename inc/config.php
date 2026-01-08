@@ -14,9 +14,9 @@ if (ENV == "DEV") {
   define("DB_DATABASE_NAME", "myaerolife_dashboard");
 } else if (ENV == "TEST") {
   define("DB_HOST", "localhost");
-  define("DB_USERNAME", "myaero2026_dashboard_uat");
+  define("DB_USERNAME", "u879065736_myaerolife");
   define("DB_PASSWORD", "6g?VyY9#");
-  define("DB_DATABASE_NAME", "myaero2026_dashboard_uat");
+  define("DB_DATABASE_NAME", "u879065736_myaerolife");
 } else if (ENV == "PROD") {
   define("DB_HOST", "localhost");
   define("DB_USERNAME", "myaero2026_dashboard");
