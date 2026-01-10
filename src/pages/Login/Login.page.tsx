@@ -3,7 +3,7 @@ import { Base64 } from "js-base64";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 import logo from "../../assets/logo-full.png";
@@ -26,6 +26,7 @@ const validationSchema = Yup.object({
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const buttonRef = useRef(null);
   const [isloading, setIsLoading] = useState(false);
 
@@ -105,6 +106,8 @@ const Login = () => {
       });
   }
 
+  console.log("location", location);
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden">
       <Header />
@@ -116,7 +119,15 @@ const Login = () => {
         <div className="col-span-12 flex items-center justify-center md:col-span-7">
           <div className="bg-secondary text-secondaryV2 flex h-full w-full flex-col items-center justify-center">
             <div className="w-10/12 rounded-sm bg-white px-8 py-8 shadow md:w-7/12 md:px-16 md:py-16">
-              <h3 className="text-2xl font-bold">Sign in to your account</h3>
+              <h3 className="text-2xl font-bold">
+                Sign in to your{" "}
+                <i>
+                  {location.state?.role === UserRole.MANAGER
+                    ? "Manager"
+                    : "Hero"}{" "}
+                </i>{" "}
+                account
+              </h3>
               <Formik
                 initialValues={{
                   employee_code: "",

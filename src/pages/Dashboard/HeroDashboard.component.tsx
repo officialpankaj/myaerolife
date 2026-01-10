@@ -180,7 +180,7 @@ const HeroDashboard = () => {
                   htmlFor="quantity"
                   className="mb-1 block text-sm font-semibold text-gray-700"
                 >
-                  Quantity
+                  POB Quantity collected today
                 </label>
                 <Field
                   name="quantity"

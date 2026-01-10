@@ -10,6 +10,7 @@ import {
 } from "../../store/reducers/commonSlice";
 import type { RootState } from "../../store/Store";
 import { useState, useRef, useEffect } from "react";
+import { UserRole } from "../../constants/common.constants";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate(Routes.LOGIN);
+    navigate(Routes.LOGIN, { state: { role: userDetails?.role } });
     dispatch(updateIsAuthenticated(false));
     dispatch(setUserDetails({}));
     dispatch(setAccessToken(null));
@@ -74,21 +75,27 @@ const Header = () => {
             </button>
             {/* Dropdown menu */}
             {menuOpen && (
-              <div className="absolute right-0 z-50 mt-2 flex w-48 flex-col rounded-xl border border-gray-100 bg-white py-2 shadow-lg">
-                <NavLink
-                  to={Routes.LOGIN}
-                  className="text-primaryv2 hover:bg-primaryv2 rounded-lg px-5 py-2 font-medium transition-colors duration-150 hover:text-white"
-                  onClick={() => setMenuOpen(false)}
+              <div className="absolute right-0 z-50 mt-2 flex w-48 flex-col rounded-xl border border-gray-100 bg-white p-2 shadow-lg">
+                <button
+                  className="text-primaryv2 hover:bg-primaryv2 cursor-pointer rounded-lg px-5 py-2 font-medium transition-colors duration-150 hover:text-white"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate(Routes.LOGIN, { state: { role: UserRole.HERO } });
+                  }}
                 >
                   Hero Login
-                </NavLink>
-                <NavLink
-                  to={Routes.LOGIN}
-                  className="text-primaryv2 hover:bg-primaryv2 rounded-lg px-5 py-2 font-medium transition-colors duration-150 hover:text-white"
-                  onClick={() => setMenuOpen(false)}
+                </button>
+                <button
+                  className="text-primaryv2 hover:bg-primaryv2 cursor-pointer rounded-lg px-5 py-2 font-medium transition-colors duration-150 hover:text-white"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate(Routes.LOGIN, {
+                      state: { role: UserRole.MANAGER },
+                    });
+                  }}
                 >
                   Manager Login
-                </NavLink>
+                </button>
               </div>
             )}
           </div>

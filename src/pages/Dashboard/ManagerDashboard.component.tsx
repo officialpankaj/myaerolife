@@ -4,7 +4,6 @@ import Axios from "../../utils/axios";
 import { downloadExcelFile } from "../../utils/downloadExcel.util";
 
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
-import { scaleQuantize } from "d3-scale";
 import IndiaTopoJson from "../../maps/IND.json";
 
 const ManagerDashboard = () => {
@@ -12,10 +11,6 @@ const ManagerDashboard = () => {
   const [totalScans, setTotalScans] = useState(0);
   const [activeState, setActiveState] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const colorScale = scaleQuantize()
-    .domain([0, 100])
-    .range(["#f1eef6", "#bdc9e1", "#74a9cf", "#2b8cbe", "#045a8d"]);
 
   const fetchData = () => {
     setLoading(true);
@@ -73,13 +68,22 @@ const ManagerDashboard = () => {
                   geo.properties.st_nm ||
                   geo.properties.state ||
                   geo.properties.name;
-                const value = stateData[stateName] || 0;
+                const value = Number(stateData[stateName] || 0);
+                const opacityPercentage = Math.floor(
+                  (value * 100 * 255) / (totalScans * 100),
+                );
+                const fillColor =
+                  opacityPercentage > 0
+                    ? `#045a8d${opacityPercentage.toString(16)?.padStart(2, "0")}`
+                    : "#ffffff";
+
+                console.log("fillColor", fillColor);
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={colorScale(value)}
-                    stroke="#e0e7ff"
+                    fill={fillColor}
+                    stroke="#b1bce3"
                     strokeWidth={0.7}
                     vectorEffect="non-scaling-stroke"
                     onClick={() =>
