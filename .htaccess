@@ -1,21 +1,31 @@
 DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ----------------------------------------
+    # Pass Authorization header to PHP (cPanel fix)
+    # ----------------------------------------
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Disable MultiViews
     <IfModule mod_negotiation.c>
         Options -MultiViews
     </IfModule>
 
-    RewriteEngine On
-
+    # Detect base path dynamically
     RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
     RewriteRule ^(.*) - [E=BASE:%1]
 
+    # Redirect /index.php to clean URL
     RewriteCond %{ENV:REDIRECT_STATUS} ^$
     RewriteRule ^index\.php(/(.*)|$) %{ENV:BASE}/$2 [R=301,L]
 
+    # If file exists, serve it directly
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule .? - [L]
 
+    # Route everything else to index.php
     RewriteRule .? %{ENV:BASE}/index.php [L]
-
 </IfModule>
