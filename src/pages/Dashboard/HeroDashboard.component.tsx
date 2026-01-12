@@ -6,10 +6,12 @@ import Select from "react-select";
 import Header from "../../components/Header/Header.component";
 import { toast } from "react-toastify";
 import successIcon from "../../assets/success-icon.svg";
+import { LunchStatus, LunchStatusName } from "../../constants/common.constants";
 
 const validationSchema = Yup.object({
   doctor_code: Yup.string().required("Doctor is required"),
   chemist_code: Yup.string().required("Chemist is required"),
+  launch_status: Yup.string().required("Launch Status is required"),
   quantity: Yup.number()
     .typeError("Quantity must be a number")
     .required("Quantity is required")
@@ -58,10 +60,16 @@ const HeroDashboard = () => {
     label: chem?.chemist_code,
   }));
 
+  const lunchStatusOptions = Object.values(LunchStatus).map((status) => ({
+    value: status,
+    label: LunchStatusName[status],
+  }));
+
   interface IScanFormValues {
     doctor_code: string;
     chemist_code: string;
     quantity: number | string;
+    launch_status: LunchStatus | "";
   }
 
   interface IFormikHelpers {
@@ -96,12 +104,17 @@ const HeroDashboard = () => {
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center bg-gray-50">
       <Header />
-      <div className="mt-40 flex w-11/12 max-w-md flex-col items-center rounded-2xl border border-gray-100 bg-white p-8 shadow-xl md:w-full">
+      <div className="mt-20 flex w-11/12 max-w-md flex-col items-center rounded-2xl border border-gray-100 bg-white p-8 shadow-xl md:w-full">
         <h2 className="mb-6 text-2xl font-semibold tracking-tight text-gray-800">
           Add Scan Details
         </h2>
         <Formik
-          initialValues={{ doctor_code: "", chemist_code: "", quantity: "" }}
+          initialValues={{
+            doctor_code: "",
+            chemist_code: "",
+            quantity: "",
+            launch_status: "",
+          }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
@@ -194,6 +207,40 @@ const HeroDashboard = () => {
                   component="div"
                   className="mt-1 text-xs text-red-500"
                 />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="launch_status"
+                  className="mb-1 block text-sm font-semibold text-gray-700"
+                >
+                  Lunch Status
+                </label>
+                <Select
+                  id="launch_status"
+                  name="launch_status"
+                  options={lunchStatusOptions}
+                  value={
+                    lunchStatusOptions.find(
+                      (opt) => opt.value === values.launch_status,
+                    ) || null
+                  }
+                  onChange={(option) =>
+                    setFieldValue("launch_status", option ? option.value : "")
+                  }
+                  placeholder="Select Launch Status"
+                  isClearable
+                  classNames={{
+                    control: () =>
+                      "!rounded-lg !border-gray-200 !shadow-none text-ssm font-medium text-black",
+                    menuList: () => "font-semibold text-ssm text-black",
+                    singleValue: () => "font-medium text-ssm text-black",
+                  }}
+                />
+                {touched.launch_status && errors.launch_status && (
+                  <div className="mt-1 text-xs text-red-500">
+                    {errors.launch_status}
+                  </div>
+                )}
               </div>
               <button
                 type="submit"

@@ -10,4 +10,17 @@ export const EmployeeStatus = {
   ACTIVE: "1",
 } as const;
 
-export type EmployeeStatus = (typeof EmployeeStatus)[keyof typeof EmployeeStatus];
+export type EmployeeStatus =
+  (typeof EmployeeStatus)[keyof typeof EmployeeStatus];
+
+export const LunchStatus = {
+  LUNCHED_TODAY: "0",
+  RELAUNCHING: "1",
+} as const;
+
+export const LunchStatusName = {
+  [LunchStatus.LUNCHED_TODAY]: "Lunched Today",
+  [LunchStatus.RELAUNCHING]: "Relaunching with input",
+};
+
+export type LunchStatus = (typeof LunchStatus)[keyof typeof LunchStatus];
