@@ -98,13 +98,14 @@ class AdminModel extends Database
     return false;
   }
 
-  public function registerScan($employee_code, $doctor_code, $chemist_code, $quantity)
+  public function registerScan($employee_code, $doctor_code, $chemist_code, $quantity, $launch_status)
   {
-    $result =  $this->update("INSERT INTO scans(employee_code, doctor_code, chemist_code, quantity, ip_address, created_at) VALUES(
+    $result =  $this->update("INSERT INTO scans(employee_code, doctor_code, chemist_code, quantity, launch_status, ip_address, created_at) VALUES(
       $employee_code, 
       $doctor_code, 
       '$chemist_code', 
       $quantity,
+      '$launch_status', 
       '" . $_SERVER['REMOTE_ADDR'] . "',
       NOW()
     )");

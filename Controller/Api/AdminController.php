@@ -186,9 +186,10 @@ class AdminController extends BaseController
       $doctor_code  = (isset($data->doctor_code)) ? $data->doctor_code : null;
       $chemist_code  = (isset($data->chemist_code)) ? $data->chemist_code : false;
       $quantity  = (isset($data->quantity)) ? $data->quantity : null;
+      $launch_status  = (isset($data->launch_status)) ? $data->launch_status : null;
 
       $adminModel = new AdminModel();
-      if (($adminModel->registerScan($userdata->employee_code, $doctor_code, $chemist_code, $quantity)) !== false) {
+      if (($adminModel->registerScan($userdata->employee_code, $doctor_code, $chemist_code, $quantity, $launch_status)) !== false) {
         $response['code'] = 200;
         $response['status'] = 'success';
         $response['message'] = 'Scan Registered Successfully';

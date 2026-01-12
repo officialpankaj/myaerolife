@@ -19,6 +19,12 @@ define('EXPORT_COLUMN_NAMES', [
   'doctor_code' => 'Doctor Code',
   'chemist_code' => 'Chemist Code',
   'quantity' => 'Quantity',
+  'launch_status' => 'Launch Status',
   'ip_address' => 'IP Address',
   'created_at' => 'Timestamp'
+]);
+
+define('LAUNCH_STATUS_NAMES', [
+  '0' => 'Launched Today',
+  '1' => 'Relaunching with input'
 ]);

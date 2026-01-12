@@ -24,6 +24,10 @@ class ExcelExporter extends Database
       foreach ($columns as $col) {
         $value = $row[$col] ?? '';
 
+        if ($col === 'launch_status' && $value !== '' && isset(LAUNCH_STATUS_NAMES[$value])) {
+          $value = LAUNCH_STATUS_NAMES[$value];
+        }
+
         $orderedRow[] = $value;
       }
       $writer->writeSheetRow($sheetName, $orderedRow);
