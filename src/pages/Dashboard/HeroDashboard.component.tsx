@@ -105,8 +105,10 @@ const HeroDashboard = () => {
     <div className="relative flex min-h-screen w-full flex-col items-center bg-gray-50">
       <Header />
       <div className="mt-20 flex w-11/12 max-w-md flex-col items-center rounded-2xl border border-gray-100 bg-white p-8 shadow-xl md:w-full">
-        <h2 className="mb-6 text-2xl font-semibold tracking-tight text-gray-800">
-          Add Scan Details
+        <h2 className="mb-6 text-center text-2xl font-semibold tracking-tight text-gray-800">
+          Welcome!
+          <br />
+          Aerolife Mini Hero
         </h2>
         <Formik
           initialValues={{
@@ -125,7 +127,7 @@ const HeroDashboard = () => {
                   htmlFor="doctor_code"
                   className="block text-sm font-semibold text-gray-700"
                 >
-                  Doctor
+                  Doctor ID
                 </label>
                 <Select
                   id="doctor_code"
@@ -159,7 +161,7 @@ const HeroDashboard = () => {
                   htmlFor="chemist_code"
                   className="mb-1 block text-sm font-semibold text-gray-700"
                 >
-                  Chemist
+                  Chemist ID
                 </label>
                 <Select
                   id="chemist_code"
