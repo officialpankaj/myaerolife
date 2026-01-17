@@ -248,11 +248,15 @@ class AdminController extends BaseController
     if (strtoupper($_SERVER["REQUEST_METHOD"]) == "GET") {
       $adminModel = new AdminModel();
       if (($data = $adminModel->getAllScansByState()) !== false) {
-        $total = $adminModel->getAllScansCount();
+        $totalPOBCollected = $adminModel->getAllPOBCount();
+        $totalRegions = $adminModel->getAllRegionsCount();
+        $totalDoctors = $adminModel->getAllDoctorsCount();
         $response['code'] = 200;
         $response['status'] = 'success';
         $response['data'] = $data;
-        $response['total'] = $total;
+        $response['total_pob'] = $totalPOBCollected;
+        $response['total_regions'] = $totalRegions;
+        $response['total_doctors'] = $totalDoctors;
         $response['message'] = 'Data Found';
         header("HTTP/1.1 200 OK");
       } else {

@@ -133,7 +133,7 @@ class AdminModel extends Database
 
   public function getAllScansByState()
   {
-    $result =  $this->select("SELECT e.state, COUNT(*) as count FROM scans sc LEFT JOIN employees e ON sc.employee_code = e.employee_code GROUP BY e.state");
+    $result =  $this->select("SELECT e.state, SUM(sc.quantity) as count FROM scans sc LEFT JOIN employees e ON sc.employee_code = e.employee_code GROUP BY e.state");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $data = array();
@@ -145,9 +145,31 @@ class AdminModel extends Database
     return false;
   }
 
-  public function getAllScansCount()
+  public function getAllPOBCount()
   {
-    $result =  $this->select("SELECT COUNT(*) as total FROM scans");
+    $result =  $this->select("SELECT SUM(quantity) as total FROM scans");
+
+    if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      return $row['total'];
+    }
+    return 0;
+  }
+
+  public function getAllDoctorsCount()
+  {
+    $result =  $this->select("SELECT COUNT(*) as total FROM doctors");
+
+    if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      return $row['total'];
+    }
+    return 0;
+  }
+
+  public function getAllRegionsCount()
+  {
+    $result =  $this->select("SELECT COUNT(DISTINCT region) as total FROM employees");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $row = $result->fetch_assoc();
