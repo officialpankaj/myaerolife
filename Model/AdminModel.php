@@ -133,7 +133,33 @@ class AdminModel extends Database
 
   public function getAllScansByState()
   {
-    $result =  $this->select("SELECT e.state, SUM(sc.quantity) as count FROM scans sc LEFT JOIN employees e ON sc.employee_code = e.employee_code GROUP BY e.state");
+    $result = $this->select("
+        SELECT
+            d.state,
+            COALESCE(s.pob_count, 0) AS pob_count,
+            d.doctor_count
+        FROM (
+            SELECT
+                e.state,
+                COUNT(*) AS doctor_count
+            FROM doctors doc
+            LEFT JOIN employees e
+                ON e.employee_code = doc.employee_code
+            GROUP BY e.state
+        ) d
+        LEFT JOIN (
+            SELECT
+                e.state,
+                SUM(sc.quantity) AS pob_count
+            FROM scans sc
+            LEFT JOIN employees e
+                ON sc.employee_code = e.employee_code
+            GROUP BY e.state
+        ) s
+            ON d.state = s.state
+        ORDER BY d.state DESC
+    ");
+
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $data = array();
