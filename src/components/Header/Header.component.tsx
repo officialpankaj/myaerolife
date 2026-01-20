@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Routes } from "../../constants/routes.constants";
 
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo-full.png";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAccessToken,
@@ -51,7 +51,7 @@ const Header = () => {
         <NavLink to="/" className="flex items-center gap-3">
           <img
             src={logo}
-            className="h-12 rounded-full transition-transform duration-200 hover:scale-105"
+            className="h-14 transition-transform duration-200 hover:scale-105"
             alt="Logo"
           />
         </NavLink>

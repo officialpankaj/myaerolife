@@ -7,15 +7,17 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import IndiaTopoJson from "../../maps/IND.json";
 
 const ManagerDashboard = () => {
-  const [stateData, setStateData] = useState([]);
+  const [stateData, setStateData] = useState<
+    Record<string, { pob_count: number; doctor_count: number }>
+  >({});
   const [totalStats, setTotalStats] = useState<{
     pob: number;
     doctors: number;
-    regions: number;
-  }>({ pob: 0, doctors: 0, regions: 0 });
+  }>({ pob: 0, doctors: 0 });
   const [activeState, setActiveState] = useState<{
     state: string;
-    count: number;
+    pob_count: number;
+    doctor_count: number;
   } | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -24,17 +26,19 @@ const ManagerDashboard = () => {
     Axios({ url: "/admin/all-scans-by-state", method: "GET" })
       .then(({ data }) => {
         const structuredData = data?.data?.reduce((prev, curr) => {
-          prev[curr?.state] = curr?.count;
+          prev[curr?.state] = {
+            pob_count: curr?.pob_count || 0,
+            doctor_count: curr?.doctor_count || 0,
+          };
           return prev;
         }, {});
         setStateData(structuredData || {});
         setTotalStats({
           pob: data?.total_pob || 0,
           doctors: data?.total_doctors || 0,
-          regions: data?.total_regions || 0,
         });
       })
-      .catch(() => setStateData([]))
+      .catch(() => setStateData({}))
       .finally(() => setLoading(false));
   };
 
@@ -78,9 +82,12 @@ const ManagerDashboard = () => {
                   geo.properties.st_nm ||
                   geo.properties.state ||
                   geo.properties.name;
-                const value = Number(stateData[stateName] || 0);
+                const pobCount = Number(stateData[stateName]?.pob_count || 0);
+                const doctorCount = Number(
+                  stateData[stateName]?.doctor_count || 0,
+                );
                 const opacityPercentage = Math.floor(
-                  (value * 100 * 255) / (totalStats?.pob * 100),
+                  (pobCount * 100 * 255) / (totalStats?.pob * 100),
                 );
                 const fillColor =
                   opacityPercentage > 0
@@ -97,7 +104,11 @@ const ManagerDashboard = () => {
                     strokeWidth={0.7}
                     vectorEffect="non-scaling-stroke"
                     onClick={() =>
-                      setActiveState({ state: stateName, count: value })
+                      setActiveState({
+                        state: stateName,
+                        pob_count: pobCount,
+                        doctor_count: doctorCount,
+                      })
                     }
                     style={{
                       default: {
@@ -114,7 +125,7 @@ const ManagerDashboard = () => {
                       },
                     }}
                   >
-                    <title>{`${stateName}: ${value}`}</title>
+                    <title>{`${stateName}: ${pobCount}`}</title>
                   </Geography>
                 );
               })
@@ -123,9 +134,6 @@ const ManagerDashboard = () => {
         </ComposableMap>
 
         <div className="text-primaryv2 absolute right-2 bottom-4 text-xs md:right-4 md:text-sm">
-          <p>
-            Total Regions - <strong>{totalStats?.regions}</strong>
-          </p>
           <p>
             Total Doctors - <strong>{totalStats?.doctors}</strong>
           </p>
@@ -139,7 +147,13 @@ const ManagerDashboard = () => {
           <h2 className="text-base font-medium tracking-tight text-gray-800 md:text-2xl">
             {activeState?.state}{" "}
             <span className="font-semibold text-gray-500">
-              - {activeState?.count} POB Collected
+              - {activeState?.pob_count} POB Collected
+            </span>
+          </h2>
+          <h2 className="text-base font-medium tracking-tight text-gray-800 md:text-2xl">
+            Doctors{" "}
+            <span className="font-semibold text-gray-500">
+              - {activeState?.doctor_count}
             </span>
           </h2>
         </div>
@@ -160,17 +174,17 @@ const ManagerDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(stateData)
-                .sort((a, b) => b[1] - a[1])
-                .map(([state, pob]) => (
-                  <tr
-                    key={state}
-                    className="border-t border-gray-100 hover:bg-gray-50"
-                  >
-                    <td className="px-6 py-2 text-sm text-gray-800">{state}</td>
-                    <td className="px-6 py-2 text-sm text-gray-800">{pob}</td>
-                  </tr>
-                ))}
+              {Object.entries(stateData).map(([state, stats]) => (
+                <tr
+                  key={state}
+                  className="border-t border-gray-100 hover:bg-gray-50"
+                >
+                  <td className="px-6 py-2 text-sm text-gray-800">{state}</td>
+                  <td className="px-6 py-2 text-sm text-gray-800">
+                    {stats?.pob_count}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
