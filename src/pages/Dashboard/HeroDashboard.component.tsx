@@ -10,6 +10,10 @@ import { LunchStatus, LunchStatusName } from "../../constants/common.constants";
 
 const validationSchema = Yup.object({
   doctor_code: Yup.string().required("Doctor is required"),
+  doctor_name: Yup.string().when("doctor_code", {
+    is: (value) => value === "other",
+    then: () => Yup.string().required("Field is required"),
+  }),
   chemist_code: Yup.string().required("Chemist is required"),
   launch_status: Yup.string().required("Launch Status is required"),
   quantity: Yup.number()
@@ -50,10 +54,16 @@ const HeroDashboard = () => {
     fetchChemistList();
   }, []);
 
-  const doctorOptions = doctorList.map((doc) => ({
-    value: doc?.doctor_code,
-    label: doc?.doctor_code,
-  }));
+  const doctorOptions = [
+    ...doctorList.map((doc) => ({
+      value: doc?.doctor_code,
+      label: doc?.doctor_code,
+    })),
+    {
+      value: "other",
+      label: "Other",
+    },
+  ];
 
   const chemistOptions = chemistList.map((chem) => ({
     value: chem?.chemist_code,
@@ -67,6 +77,7 @@ const HeroDashboard = () => {
 
   interface IScanFormValues {
     doctor_code: string;
+    doctor_name: string;
     chemist_code: string;
     quantity: number | string;
     launch_status: LunchStatus | "";
@@ -85,7 +96,14 @@ const HeroDashboard = () => {
     Axios({
       url: "/admin/register-scan",
       method: "POST",
-      data: values,
+      data: {
+        doctor_code:
+          values.doctor_code === "other" ? undefined : values.doctor_code,
+        doctor_name: values.doctor_name,
+        chemist_code: values.chemist_code,
+        quantity: Number(values.quantity),
+        launch_status: values.launch_status,
+      },
     })
       .then(() => {
         setShowModal(true);
@@ -113,6 +131,7 @@ const HeroDashboard = () => {
         <Formik
           initialValues={{
             doctor_code: "",
+            doctor_name: "",
             chemist_code: "",
             quantity: "",
             launch_status: "",
@@ -156,6 +175,26 @@ const HeroDashboard = () => {
                   </div>
                 )}
               </div>
+              {values?.doctor_code === "other" && (
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="doctor_name"
+                    className="mb-1 block text-sm font-semibold text-gray-700"
+                  >
+                    Doctor Name
+                  </label>
+                  <Field
+                    name="doctor_name"
+                    type="text"
+                    className="focus:ring-primaryv2 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 focus:ring-2 focus:outline-none"
+                  />
+                  <ErrorMessage
+                    name="doctor_name"
+                    component="div"
+                    className="mt-1 text-xs text-red-500"
+                  />
+                </div>
+              )}
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="chemist_code"
@@ -264,8 +303,9 @@ const HeroDashboard = () => {
               <img src={successIcon} className="w-16" alt="Success" />
             </div>
             <h3 className="text-base font-semibold text-gray-800">
-              Scan details added successfully!
+              Your response has been recorded successfully!
             </h3>
+            <p>Thanks for making a difference.</p>
             <button
               className="bg-primaryv2 hover:bg-primaryv7 mt-2 rounded-lg px-5 py-1.5 text-sm font-medium text-white transition-colors"
               onClick={() => setShowModal(false)}

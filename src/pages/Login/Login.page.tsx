@@ -93,6 +93,10 @@ const Login = () => {
           dispatch(setUserDetails(data?.userdata));
           dispatch(updateIsAuthenticated(true));
           navigate("/dashboard");
+        } else {
+          toast.error(
+            data?.message || "Something went wrong. Please try again.",
+          );
         }
       })
       .catch((error: AxiosErrorResponse) => {

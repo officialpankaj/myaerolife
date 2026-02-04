@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import Header from "../../components/Header/Header.component";
 import Axios from "../../utils/axios";
 import { downloadExcelFile } from "../../utils/downloadExcel.util";
-
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import IndiaTopoJson from "../../maps/IND.json";
+import { Tooltip } from "react-tooltip";
 
 const ManagerDashboard = () => {
   const [stateData, setStateData] = useState<
@@ -16,8 +16,13 @@ const ManagerDashboard = () => {
   }>({ pob: 0, doctors: 0 });
   const [activeState, setActiveState] = useState<{
     state: string;
-    pob_count: number;
-    doctor_count: number;
+    pob_count: number | null;
+    doctor_count: number | null;
+  } | null>(null);
+  const [tooltipData, setTooltipData] = useState<{
+    state: string;
+    pob_count: number | null;
+    doctor_count: number | null;
   } | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -106,8 +111,15 @@ const ManagerDashboard = () => {
                     onClick={() =>
                       setActiveState({
                         state: stateName,
-                        pob_count: pobCount,
-                        doctor_count: doctorCount,
+                        pob_count: stateData[stateName] ? pobCount : null,
+                        doctor_count: stateData[stateName] ? doctorCount : null,
+                      })
+                    }
+                    onMouseOver={() =>
+                      setTooltipData({
+                        state: stateName,
+                        pob_count: stateData[stateName] ? pobCount : null,
+                        doctor_count: stateData[stateName] ? doctorCount : null,
                       })
                     }
                     style={{
@@ -124,14 +136,39 @@ const ManagerDashboard = () => {
                         outline: "none",
                       },
                     }}
-                  >
-                    <title>{`${stateName}: ${pobCount}`}</title>
-                  </Geography>
+                    id="state-geography"
+                  ></Geography>
                 );
               })
             }
           </Geographies>
         </ComposableMap>
+
+        <Tooltip
+          anchorSelect="#state-geography"
+          place="top"
+          className="rounded-md! bg-white! drop-shadow-xl"
+        >
+          <div className="text-primaryv2 rounded-xl p-3 text-xs md:right-4 md:text-sm">
+            <strong className="mb-2 italic underline">
+              {tooltipData?.state}
+            </strong>
+            {tooltipData?.doctor_count !== null && (
+              <p>
+                Total Doctors -{" "}
+                <span className="font-semibold">
+                  {tooltipData?.doctor_count}
+                </span>
+              </p>
+            )}
+            {tooltipData?.doctor_count !== null && (
+              <p>
+                Total POB Collected -{" "}
+                <span className="font-semibold">{tooltipData?.pob_count}</span>
+              </p>
+            )}
+          </div>
+        </Tooltip>
 
         <div className="text-primaryv2 absolute right-2 bottom-4 text-xs md:right-4 md:text-sm">
           <p>
@@ -142,22 +179,24 @@ const ManagerDashboard = () => {
           </p>
         </div>
       </div>
-      {activeState && (
-        <div className="my-8 flex w-11/12 max-w-4xl flex-col items-center justify-between gap-5 rounded-2xl border border-gray-100 bg-white px-8 py-4 shadow-xl md:w-full md:flex-row">
-          <h2 className="text-base font-medium tracking-tight text-gray-800 md:text-2xl">
-            {activeState?.state}{" "}
-            <span className="font-semibold text-gray-500">
-              - {activeState?.pob_count} POB Collected
-            </span>
-          </h2>
-          <h2 className="text-base font-medium tracking-tight text-gray-800 md:text-2xl">
-            Doctors{" "}
-            <span className="font-semibold text-gray-500">
-              - {activeState?.doctor_count}
-            </span>
-          </h2>
-        </div>
-      )}
+      {activeState &&
+        activeState?.doctor_count !== null &&
+        activeState?.pob_count !== null && (
+          <div className="my-8 flex w-11/12 max-w-4xl flex-col items-center justify-between gap-5 rounded-2xl border border-gray-100 bg-white px-8 py-4 shadow-xl md:w-full md:flex-row">
+            <h2 className="text-base font-medium tracking-tight text-gray-800 md:text-2xl">
+              {activeState?.state}{" "}
+              <span className="font-semibold text-gray-500">
+                - {activeState?.pob_count} POB Collected
+              </span>
+            </h2>
+            <h2 className="text-base font-medium tracking-tight text-gray-800 md:text-2xl">
+              Doctors{" "}
+              <span className="font-semibold text-gray-500">
+                - {activeState?.doctor_count}
+              </span>
+            </h2>
+          </div>
+        )}
 
       {/* Minimalist table for stateData */}
       {stateData && Object.keys(stateData).length > 0 && (
@@ -166,7 +205,10 @@ const ManagerDashboard = () => {
             <thead>
               <tr className="bg-primary/20">
                 <th className="px-6 py-3 text-xs font-semibold text-gray-700">
-                  State
+                  Region
+                </th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-700">
+                  No of Doctors
                 </th>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-700">
                   POB Collected
@@ -180,6 +222,9 @@ const ManagerDashboard = () => {
                   className="border-t border-gray-100 hover:bg-gray-50"
                 >
                   <td className="px-6 py-2 text-sm text-gray-800">{state}</td>
+                  <td className="px-6 py-2 text-sm text-gray-800">
+                    {stats?.doctor_count}
+                  </td>
                   <td className="px-6 py-2 text-sm text-gray-800">
                     {stats?.pob_count}
                   </td>
