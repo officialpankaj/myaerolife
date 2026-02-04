@@ -98,11 +98,12 @@ class AdminModel extends Database
     return false;
   }
 
-  public function registerScan($employee_code, $doctor_code, $chemist_code, $quantity, $launch_status)
+  public function registerScan($employee_code, $doctor_code, $doctor_name, $chemist_code, $quantity, $launch_status)
   {
-    $result =  $this->update("INSERT INTO scans(employee_code, doctor_code, chemist_code, quantity, launch_status, ip_address, created_at) VALUES(
+    $result =  $this->update("INSERT INTO scans(employee_code, doctor_code, doctor_name, chemist_code, quantity, launch_status, ip_address, created_at) VALUES(
       $employee_code, 
-      $doctor_code, 
+      " . ($doctor_code === null ? "NULL" : "$doctor_code") . ", 
+      " . ($doctor_name === null ? "NULL" : "'$doctor_name'") . ",
       '$chemist_code', 
       $quantity,
       '$launch_status', 
@@ -117,9 +118,9 @@ class AdminModel extends Database
     }
   }
 
-  public function getAllScans()
+  public function getAllScans($userdata)
   {
-    $result =  $this->select("SELECT sc.*, e.state, e.zone, e.region, e.hq FROM scans sc LEFT JOIN employees e ON e.employee_code = sc.employee_code");
+    $result =  $this->select("SELECT sc.*, COALESCE(sc.doctor_code, sc.doctor_name) AS doctor, e.state, e.zone, e.region, e.hq FROM scans sc LEFT JOIN employees e ON e.employee_code = sc.employee_code WHERE e.region = '" . $userdata->region . "'");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $data = array();
@@ -131,7 +132,7 @@ class AdminModel extends Database
     return false;
   }
 
-  public function getAllScansByState()
+  public function getAllScansByState($userdata)
   {
     $result = $this->select("
         SELECT
@@ -145,6 +146,7 @@ class AdminModel extends Database
             FROM doctors doc
             LEFT JOIN employees e
                 ON e.employee_code = doc.employee_code
+            WHERE e.region = '"  . $userdata->region . "'
             GROUP BY e.state
         ) d
         LEFT JOIN (

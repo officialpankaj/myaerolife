@@ -183,13 +183,14 @@ class AdminController extends BaseController
       // Converts it into a PHP object
       $data = json_decode($json);
 
-      $doctor_code  = (isset($data->doctor_code)) ? $data->doctor_code : null;
+      $doctor_code  = (isset($data->doctor_code)) && $data->doctor_code !== "" ? $data->doctor_code : null;
+      $doctor_name  = (isset($data->doctor_name)) && $data->doctor_name !== "" ? $data->doctor_name : null;
       $chemist_code  = (isset($data->chemist_code)) ? $data->chemist_code : false;
       $quantity  = (isset($data->quantity)) ? $data->quantity : null;
       $launch_status  = (isset($data->launch_status)) ? $data->launch_status : null;
 
       $adminModel = new AdminModel();
-      if (($adminModel->registerScan($userdata->employee_code, $doctor_code, $chemist_code, $quantity, $launch_status)) !== false) {
+      if (($adminModel->registerScan($userdata->employee_code, $doctor_code, $doctor_name, $chemist_code, $quantity, $launch_status)) !== false) {
         $response['code'] = 200;
         $response['status'] = 'success';
         $response['message'] = 'Scan Registered Successfully';
@@ -219,7 +220,7 @@ class AdminController extends BaseController
 
     if (strtoupper($_SERVER["REQUEST_METHOD"]) == "GET") {
       $adminModel = new AdminModel();
-      if (($data = $adminModel->getAllScans()) !== false) {
+      if (($data = $adminModel->getAllScans($userdata)) !== false) {
         $excelExporter = new ExcelExporter();
         $excelExporter->export($data, EXPORT_COLUMN_NAMES, 'all_scans.xlsx', 'All Scans');
       } else {
@@ -247,9 +248,9 @@ class AdminController extends BaseController
 
     if (strtoupper($_SERVER["REQUEST_METHOD"]) == "GET") {
       $adminModel = new AdminModel();
-      if (($data = $adminModel->getAllScansByState()) !== false) {
-        $totalPOBCollected = $adminModel->getAllPOBCount();
-        $totalDoctors = $adminModel->getAllDoctorsCount();
+      if (($data = $adminModel->getAllScansByState($userdata)) !== false) {
+        $totalPOBCollected = $adminModel->getAllPOBCount($userdata);
+        $totalDoctors = $adminModel->getAllDoctorsCount($userdata);
         $response['code'] = 200;
         $response['status'] = 'success';
         $response['data'] = $data;
