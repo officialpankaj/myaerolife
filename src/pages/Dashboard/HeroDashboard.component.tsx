@@ -15,12 +15,16 @@ const validationSchema = Yup.object({
     then: () => Yup.string().required("Field is required"),
   }),
   chemist_code: Yup.string().required("Chemist is required"),
+  chemist_name: Yup.string().when("chemist_code", {
+    is: (value) => value === "other",
+    then: () => Yup.string().required("Field is required"),
+  }),
   launch_status: Yup.string().required("Launch Status is required"),
   quantity: Yup.number()
     .typeError("Quantity must be a number")
     .required("Quantity is required")
-    .max(9999, "Maximum is 9999")
-    .min(1, "Minimum is 1"),
+    .max(999, "Maximum is 999")
+    .min(0, "Minimum is 0"),
 });
 
 interface IDoctor {
@@ -65,10 +69,16 @@ const HeroDashboard = () => {
     },
   ];
 
-  const chemistOptions = chemistList.map((chem) => ({
-    value: chem?.chemist_code,
-    label: chem?.chemist_code,
-  }));
+  const chemistOptions = [
+    ...chemistList.map((chem) => ({
+      value: chem?.chemist_code,
+      label: chem?.chemist_code,
+    })),
+    {
+      value: "other",
+      label: "Other",
+    },
+  ];
 
   const lunchStatusOptions = Object.values(LunchStatus).map((status) => ({
     value: status,
@@ -79,6 +89,7 @@ const HeroDashboard = () => {
     doctor_code: string;
     doctor_name: string;
     chemist_code: string;
+    chemist_name: string;
     quantity: number | string;
     launch_status: LunchStatus | "";
   }
@@ -100,7 +111,9 @@ const HeroDashboard = () => {
         doctor_code:
           values.doctor_code === "other" ? undefined : values.doctor_code,
         doctor_name: values.doctor_name,
-        chemist_code: values.chemist_code,
+        chemist_code:
+          values.chemist_code === "other" ? undefined : values.chemist_code,
+        chemist_name: values.chemist_name,
         quantity: Number(values.quantity),
         launch_status: values.launch_status,
       },
@@ -133,6 +146,7 @@ const HeroDashboard = () => {
             doctor_code: "",
             doctor_name: "",
             chemist_code: "",
+            chemist_name: "",
             quantity: "",
             launch_status: "",
           }}
@@ -229,6 +243,26 @@ const HeroDashboard = () => {
                   </div>
                 )}
               </div>
+              {values?.chemist_code === "other" && (
+                <div className="flex flex-col gap-1">
+                  <label
+                    htmlFor="chemist_name"
+                    className="mb-1 block text-sm font-semibold text-gray-700"
+                  >
+                    Chemist Name
+                  </label>
+                  <Field
+                    name="chemist_name"
+                    type="text"
+                    className="focus:ring-primaryv2 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 focus:ring-2 focus:outline-none"
+                  />
+                  <ErrorMessage
+                    name="chemist_name"
+                    component="div"
+                    className="mt-1 text-xs text-red-500"
+                  />
+                </div>
+              )}
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="quantity"
@@ -240,8 +274,8 @@ const HeroDashboard = () => {
                   name="quantity"
                   type="number"
                   className="focus:ring-primaryv2 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 focus:ring-2 focus:outline-none"
-                  max={9999}
-                  min={1}
+                  max={999}
+                  min={0}
                 />
                 <ErrorMessage
                   name="quantity"
