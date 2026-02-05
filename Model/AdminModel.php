@@ -98,13 +98,14 @@ class AdminModel extends Database
     return false;
   }
 
-  public function registerScan($employee_code, $doctor_code, $doctor_name, $chemist_code, $quantity, $launch_status)
+  public function registerScan($employee_code, $doctor_code, $doctor_name, $chemist_code, $chemist_name, $quantity, $launch_status)
   {
-    $result =  $this->update("INSERT INTO scans(employee_code, doctor_code, doctor_name, chemist_code, quantity, launch_status, ip_address, created_at) VALUES(
+    $result =  $this->update("INSERT INTO scans(employee_code, doctor_code, doctor_name, chemist_code, chemist_name, quantity, launch_status, ip_address, created_at) VALUES(
       $employee_code, 
       " . ($doctor_code === null ? "NULL" : "$doctor_code") . ", 
       " . ($doctor_name === null ? "NULL" : "'$doctor_name'") . ",
-      '$chemist_code', 
+      " . ($chemist_code === null ? "NULL" : "$chemist_code") . ", 
+      " . ($chemist_name === null ? "NULL" : "'$chemist_name'") . ",
       $quantity,
       '$launch_status', 
       '" . $_SERVER['REMOTE_ADDR'] . "',
@@ -120,7 +121,7 @@ class AdminModel extends Database
 
   public function getAllScans($userdata)
   {
-    $result =  $this->select("SELECT sc.*, COALESCE(sc.doctor_code, sc.doctor_name) AS doctor, e.state, e.zone, e.region, e.hq FROM scans sc LEFT JOIN employees e ON e.employee_code = sc.employee_code WHERE e.region = '" . $userdata->region . "'");
+    $result =  $this->select("SELECT sc.*, COALESCE(sc.doctor_code, sc.doctor_name) AS doctor, COALESCE(sc.chemist_code, sc.chemist_name) AS chemist, e.state, e.zone, e.region, e.hq FROM scans sc LEFT JOIN employees e ON e.employee_code = sc.employee_code WHERE e.region = '" . $userdata->region . "'");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $data = array();
@@ -135,31 +136,13 @@ class AdminModel extends Database
   public function getAllScansByState($userdata)
   {
     $result = $this->select("
-        SELECT
-            d.state,
-            COALESCE(s.pob_count, 0) AS pob_count,
-            d.doctor_count
-        FROM (
-            SELECT
-                e.state,
-                COUNT(*) AS doctor_count
-            FROM doctors doc
-            LEFT JOIN employees e
-                ON e.employee_code = doc.employee_code
-            WHERE e.region = '"  . $userdata->region . "'
-            GROUP BY e.state
-        ) d
-        LEFT JOIN (
-            SELECT
-                e.state,
-                SUM(sc.quantity) AS pob_count
-            FROM scans sc
-            LEFT JOIN employees e
-                ON sc.employee_code = e.employee_code
-            GROUP BY e.state
-        ) s
-            ON d.state = s.state
-        ORDER BY d.state DESC
+        SELECT 
+          e.state, COALESCE(SUM(sc.quantity), 0) AS pob_count, COUNT(*) as doctor_count 
+        FROM scans sc LEFT JOIN employees e 
+          ON sc.employee_code = e.employee_code 
+        WHERE e.region = '"  . $userdata->region . "'
+        GROUP BY e.state 
+        ORDER BY e.state DESC;
     ");
 
 

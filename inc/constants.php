@@ -17,7 +17,7 @@ define('EXPORT_COLUMN_NAMES', [
   'hq' => 'HQ',
   'employee_code' => 'Employee Code',
   'doctor' => 'Doctor Code/Name',
-  'chemist_code' => 'Chemist Code',
+  'chemist' => 'Chemist Code/Name',
   'quantity' => 'Quantity',
   'launch_status' => 'Launch Status',
   'ip_address' => 'IP Address',
