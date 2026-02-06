@@ -171,6 +171,7 @@ const ManagerDashboard = () => {
         </Tooltip>
 
         <div className="text-primaryv2 absolute right-2 bottom-4 text-xs md:right-4 md:text-sm">
+          <p className="font-bold text-black underline">Actual POB status</p>
           <p>
             Total Doctors - <strong>{totalStats?.doctors}</strong>
           </p>
@@ -208,10 +209,10 @@ const ManagerDashboard = () => {
                   Region
                 </th>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-700">
-                  No of Doctors
+                  Unique Doctor launches
                 </th>
                 <th className="px-6 py-3 text-xs font-semibold text-gray-700">
-                  POB Collected
+                  Total POB collection
                 </th>
               </tr>
             </thead>
