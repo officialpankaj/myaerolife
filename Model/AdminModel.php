@@ -104,7 +104,7 @@ class AdminModel extends Database
       $employee_code, 
       " . ($doctor_code === null ? "NULL" : "$doctor_code") . ", 
       " . ($doctor_name === null ? "NULL" : "'$doctor_name'") . ",
-      " . ($chemist_code === null ? "NULL" : "$chemist_code") . ", 
+      " . ($chemist_code === null ? "NULL" : "'$chemist_code'") . ", 
       " . ($chemist_name === null ? "NULL" : "'$chemist_name'") . ",
       $quantity,
       '$launch_status', 
@@ -137,12 +137,11 @@ class AdminModel extends Database
   {
     $result = $this->select("
         SELECT 
-          e.state, COALESCE(SUM(sc.quantity), 0) AS pob_count, COUNT(*) as doctor_count 
+          e.state, COALESCE(SUM(sc.quantity), 0) AS pob_count, COUNT(DISTINCT doctor_code) as doctor_count 
         FROM scans sc LEFT JOIN employees e 
           ON sc.employee_code = e.employee_code 
-        WHERE e.region = '"  . $userdata->region . "'
         GROUP BY e.state 
-        ORDER BY e.state DESC;
+        ORDER BY e.state DESC
     ");
 
 
@@ -169,7 +168,7 @@ class AdminModel extends Database
 
   public function getAllDoctorsCount()
   {
-    $result =  $this->select("SELECT COUNT(*) as total FROM doctors");
+    $result =  $this->select("SELECT COUNT(DISTINCT doctor_code) as total FROM scans");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $row = $result->fetch_assoc();
