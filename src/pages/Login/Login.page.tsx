@@ -126,9 +126,9 @@ const Login = () => {
               <h3 className="text-2xl font-bold">
                 Sign in to your{" "}
                 <i>
-                  {location.state?.role === UserRole.MANAGER
-                    ? "Manager"
-                    : "Hero"}{" "}
+                  {location.state?.role === UserRole.HERO
+                    ? "Hero"
+                    : "Manager"}{" "}
                 </i>{" "}
                 account
               </h3>

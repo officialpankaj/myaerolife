@@ -10,6 +10,9 @@ const ManagerDashboard = () => {
   const [stateData, setStateData] = useState<
     Record<string, { pob_count: number; doctor_count: number }>
   >({});
+  const [mapData, setMapData] = useState<
+    Record<string, { pob_count: number; doctor_count: number }>
+  >({});
   const [totalStats, setTotalStats] = useState<{
     pob: number;
     doctors: number;
@@ -28,7 +31,7 @@ const ManagerDashboard = () => {
 
   const fetchData = () => {
     setLoading(true);
-    Axios({ url: "/admin/all-scans-by-state", method: "GET" })
+    Axios({ url: "/admin/all-scans-by-state", method: "POST" })
       .then(({ data }) => {
         const structuredData = data?.data?.reduce((prev, curr) => {
           prev[curr?.state] = {
@@ -47,8 +50,30 @@ const ManagerDashboard = () => {
       .finally(() => setLoading(false));
   };
 
+  const fetchMapData = () => {
+    setLoading(true);
+    Axios({
+      url: "/admin/all-scans-by-state",
+      method: "POST",
+      data: { for_map: true },
+    })
+      .then(({ data }) => {
+        const structuredData = data?.data?.reduce((prev, curr) => {
+          prev[curr?.state] = {
+            pob_count: curr?.pob_count || 0,
+            doctor_count: curr?.doctor_count || 0,
+          };
+          return prev;
+        }, {});
+        setMapData(structuredData || {});
+      })
+      .catch(() => setMapData({}))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     fetchData();
+    fetchMapData();
   }, []);
 
   const handleDownload = () => {
@@ -87,9 +112,9 @@ const ManagerDashboard = () => {
                   geo.properties.st_nm ||
                   geo.properties.state ||
                   geo.properties.name;
-                const pobCount = Number(stateData[stateName]?.pob_count || 0);
+                const pobCount = Number(mapData[stateName]?.pob_count || 0);
                 const doctorCount = Number(
-                  stateData[stateName]?.doctor_count || 0,
+                  mapData[stateName]?.doctor_count || 0,
                 );
                 const opacityPercentage = Math.floor(
                   (pobCount * 100 * 255) / (totalStats?.pob * 100),
@@ -111,15 +136,15 @@ const ManagerDashboard = () => {
                     onClick={() =>
                       setActiveState({
                         state: stateName,
-                        pob_count: stateData[stateName] ? pobCount : null,
-                        doctor_count: stateData[stateName] ? doctorCount : null,
+                        pob_count: mapData[stateName] ? pobCount : null,
+                        doctor_count: mapData[stateName] ? doctorCount : null,
                       })
                     }
                     onMouseOver={() =>
                       setTooltipData({
                         state: stateName,
-                        pob_count: stateData[stateName] ? pobCount : null,
-                        doctor_count: stateData[stateName] ? doctorCount : null,
+                        pob_count: mapData[stateName] ? pobCount : null,
+                        doctor_count: mapData[stateName] ? doctorCount : null,
                       })
                     }
                     style={{
