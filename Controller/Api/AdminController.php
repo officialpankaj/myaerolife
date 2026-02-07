@@ -247,9 +247,17 @@ class AdminController extends BaseController
       'code' => 404
     );
 
-    if (strtoupper($_SERVER["REQUEST_METHOD"]) == "GET") {
+    if (strtoupper($_SERVER["REQUEST_METHOD"]) == "POST") {
+      // Takes raw data from the request
+      $json = file_get_contents('php://input');
+
+      // Converts it into a PHP object
+      $data = json_decode($json);
+
+      $for_map  = (isset($data->for_map)) ? $data->for_map : false;
+
       $adminModel = new AdminModel();
-      if (($data = $adminModel->getAllScansByState($userdata)) !== false) {
+      if (($data = $adminModel->getAllScansByState($userdata, $for_map)) !== false) {
         $totalPOBCollected = $adminModel->getAllPOBCount($userdata);
         $totalDoctors = $adminModel->getAllDoctorsCount($userdata);
         $response['code'] = 200;

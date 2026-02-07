@@ -121,7 +121,13 @@ class AdminModel extends Database
 
   public function getAllScans($userdata)
   {
-    $result =  $this->select("SELECT sc.*, COALESCE(sc.doctor_code, sc.doctor_name) AS doctor, COALESCE(sc.chemist_code, sc.chemist_name) AS chemist, e.state, e.zone, e.region, e.hq FROM scans sc LEFT JOIN employees e ON e.employee_code = sc.employee_code WHERE e.region = '" . $userdata->region . "'");
+    $whereCondition = "";
+    if ($userdata->role == USER_ROLES['SUPER_MANAGER']) {
+      $whereCondition = "";
+    } else {
+      $whereCondition = " AND e.region = '" . $userdata->region . "'";
+    }
+    $result =  $this->select("SELECT sc.*, COALESCE(sc.doctor_code, sc.doctor_name) AS doctor, COALESCE(sc.chemist_code, sc.chemist_name) AS chemist, e.state, e.zone, e.region, e.hq FROM scans sc LEFT JOIN employees e ON e.employee_code = sc.employee_code WHERE true $whereCondition");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $data = array();
@@ -133,13 +139,18 @@ class AdminModel extends Database
     return false;
   }
 
-  public function getAllScansByState($userdata)
+  public function getAllScansByState($userdata, $for_map)
   {
+    $whereCondition = "";
+    if ($for_map) {
+      $whereCondition = " AND sc.quantity > 0";
+    }
     $result = $this->select("
         SELECT 
           e.state, COALESCE(SUM(sc.quantity), 0) AS pob_count, COUNT(DISTINCT doctor_code) as doctor_count 
         FROM scans sc LEFT JOIN employees e 
           ON sc.employee_code = e.employee_code 
+        WHERE true $whereCondition
         GROUP BY e.state 
         ORDER BY e.state DESC
     ");
@@ -168,7 +179,7 @@ class AdminModel extends Database
 
   public function getAllDoctorsCount()
   {
-    $result =  $this->select("SELECT COUNT(DISTINCT doctor_code) as total FROM scans");
+    $result =  $this->select("SELECT COUNT(DISTINCT doctor_code) as total FROM scans WHERE quantity > 0");
 
     if ($result !== false && isset($result->num_rows) && $result->num_rows > 0) {
       $row = $result->fetch_assoc();

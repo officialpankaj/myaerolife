@@ -2,7 +2,8 @@
 
 define('USER_ROLES', [
   'HERO' => '0',
-  'MANAGER' => '1'
+  'MANAGER' => '1',
+  'SUPER_MANAGER' => '2',
 ]);
 
 define('EMPLOYEE_STATUS', [

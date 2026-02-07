@@ -14,9 +14,13 @@ $uri = explode('/', $uri);
 
 // Logging the endpoints requested
 if (ENV === "PROD") {
+  $headers = apache_request_headers();
   $requestBody = file_get_contents('php://input');
   Logger::logInfo("Request: " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI']);
   Logger::logInfo("Request Body: " . $requestBody);
+  if (isset($headers['Authorization'])) {
+    Logger::logInfo("Request User: " . $headers['Authorization']);
+  }
 }
 
 if (isset($uri[1])) {
