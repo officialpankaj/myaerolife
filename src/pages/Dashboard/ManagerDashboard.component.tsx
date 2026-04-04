@@ -5,6 +5,7 @@ import Axios from "../../utils/axios";
 import { downloadExcelFile } from "../../utils/downloadExcel.util";
 import IndiaTopoJson from "../../maps/IND.json";
 import { Tooltip } from "react-tooltip";
+import { toast } from "react-toastify";
 
 const ManagerDashboard = () => {
   const [stateData, setStateData] = useState<
@@ -81,6 +82,13 @@ const ManagerDashboard = () => {
     Axios({ url: "/admin/all-scans", method: "GET", responseType: "blob" })
       .then(({ data }) => {
         downloadExcelFile(data, "all_scans.xlsx");
+      })
+      .catch((error) => {
+        if (error?.response?.status === 404) {
+          toast.warn("No data available for download.");
+        } else {
+          alert("Failed to download data. Please try again later.");
+        }
       })
       .finally(() => setLoading(false));
   };

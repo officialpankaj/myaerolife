@@ -288,7 +288,7 @@ const HeroDashboard = () => {
                   htmlFor="launch_status"
                   className="mb-1 block text-sm font-semibold text-gray-700"
                 >
-                  Lunch Status
+                  Launch Status
                 </label>
                 <Select
                   id="launch_status"
