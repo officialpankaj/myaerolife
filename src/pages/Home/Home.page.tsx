@@ -24,7 +24,7 @@ const Home = () => {
         /> */}
         <div className="w-full">
           <iframe
-            src="https://player.vimeo.com/video/1198482616?controls=0&badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1"
+            src="https://player.vimeo.com/video/1198482616?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1"
             allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             className="aspect-video w-full"
